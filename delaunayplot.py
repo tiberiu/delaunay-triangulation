@@ -94,7 +94,7 @@ class Navmesh:
 
 # Initial Points
 points = []
-f = open("delaunay.in")
+f = open("data/delaunay.in")
 N = int(f.readline())
 
 for i in xrange(0, N):
@@ -117,13 +117,13 @@ plt.axis(rangeX + rangeY)
 
 # Flip algorithm
 
-flip_navmesh = Navmesh("delaunay_flip.out")
+flip_navmesh = Navmesh("data/delaunay_flip.out")
 flip_navmesh.draw(2, "Flip Algorithm")
 
-online_navmesh = Navmesh("delaunay_online.out")
+online_navmesh = Navmesh("data/delaunay_online.out")
 online_navmesh.draw(3, "Online Algorithm")
 
-divide_navmesh = Navmesh("delaunay_flip.out")
+divide_navmesh = Navmesh("data/delaunay_flip.out")
 divide_navmesh.draw(4, "Divide And Conquer Algorithm")
 
 plt.show()

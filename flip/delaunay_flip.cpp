@@ -99,8 +99,8 @@ void FlipEdges(vector<Vector3> points, Triangulation& triangulation)
 }
 
 int main() {
-    freopen("delaunay.in", "r", stdin);
-    freopen("delaunay_flip.out", "w", stdout);
+    freopen("data/delaunay.in", "r", stdin);
+    freopen("data/delaunay_flip.out", "w", stdout);
 
     // Read the N input points
     cin >> N;

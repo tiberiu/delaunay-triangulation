@@ -1,4 +1,5 @@
 *.in
 *.out
+*.swp
 bin/**
 .DS_Store
