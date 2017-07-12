@@ -9,6 +9,7 @@ const float EPS = 0.001;
 
 using namespace std;
 
+// 3D Vector class
 class Vector3 {
 public:
     float x, y, z;
@@ -25,16 +26,22 @@ public:
     }
 };
 
+// Returns the distance between two points
 float GetDistance(Vector3 p1, Vector3 p2) {
     return sqrt((p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y));
 }
 
+/* Return value can be interpreted as:
+ * - if negative points are in clocwise order, counterclockwise order otherwise
+ * - absolute value is double the area of the triangle defined by p1, p2 and p3
+ */
 float det(Vector3 p1, Vector3 p2, Vector3 p3)
 {
     return p1.x * p2.y + p2.x * p3.y + p3.x * p1.y -
            p1.x * p3.y - p3.x * p2.y - p2.x * p1.y;
 }
 
+// Comparison method for sorting points by x, and by y in case of equality
 int ConvexHullCMP(pair<Vector3, int> p1, pair<Vector3, int> p2)
 {
     if (p1.first.x == p2.first.x) {
@@ -44,6 +51,8 @@ int ConvexHullCMP(pair<Vector3, int> p1, pair<Vector3, int> p2)
     return p1.first.x < p2.first.x;
 }
 
+// Returns a vector of indices of the points on the convex hull of the points 
+// received as argument
 vector<int> ComputeConvexHull(vector<Vector3> points)
 {
     vector<pair<Vector3, int>> sortedPoints;
@@ -104,6 +113,7 @@ vector<int> ComputeConvexHull(vector<Vector3> points)
     return ret;
 }
 
+// Checks if point p is inside triangle p1, p2, p3 by using barycentric coordinates
 bool InsideTriangle(Vector3 p1, Vector3 p2, Vector3 p3, Vector3 p)
 {
     float alpha = ((p2.y - p3.y)*(p.x - p3.x) + (p3.x - p2.x)*(p.y - p3.y)) /
@@ -119,7 +129,9 @@ bool InsideTriangle(Vector3 p1, Vector3 p2, Vector3 p3, Vector3 p)
     }
 }
 
-bool LinePointDistance(Vector3 p1, Vector3 p2, Vector3 point) {
+// Returns the distance from a point to a line by computing the area of the triangle in 2 ways
+// to find the height of the triangle considering (p1, p2) as base
+float LinePointDistance(Vector3 p1, Vector3 p2, Vector3 point) {
     float d1 = GetDistance(p1, point);
     float d2 = GetDistance(p2, point);
 
