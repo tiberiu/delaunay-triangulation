@@ -1,4 +1,4 @@
 *.in
 *.out
-*/bin/*
+bin/*
 .DS_Store
