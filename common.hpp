@@ -135,13 +135,10 @@ bool InsideTriangleCircumcircle(Vector3 p1, Vector3 p2, Vector3 p3, Vector3 poin
     float d11, d12, d13, d21, d22, d23, d31, d32, d33;
 
     if (det(p1, p2, p3) < EPS) {
-        cerr << "SWAP" << endl;
         Vector3 aux = p1;
         p1 = p2;
         p2 = aux;
     }
-
-    cerr << p1.ToString() << " " << p2.ToString() << " " << p3.ToString() << " " << point.ToString() << endl;
 
     d11 = p1.x - point.x;
     d12 = p1.y - point.y;
@@ -155,12 +152,8 @@ bool InsideTriangleCircumcircle(Vector3 p1, Vector3 p2, Vector3 p3, Vector3 poin
     d32 = p3.y - point.y;
     d33 = (p3.x * p3.x - point.x * point.x) + (p3.y * p3.y - point.y * point.y);
 
-    cerr << d11 << " " << d12 << " " << d13 << endl << d21 << " " << d22 << " " << d23 << endl << d31 << " " << d32 << " " << d33 << endl;
-
     float detVal = (d11 * d22 * d33) + (d21 * d32 * d13) + (d31 * d12 * d23) -
                    (d11 * d32 * d23) - (d31 * d22 * d13) - (d21 * d12 * d33);
-
-    cerr << detVal << endl;
 
     return detVal > EPS;
 }

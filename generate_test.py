@@ -1,6 +1,6 @@
 import random
 
-N = 50
+N = 1000
 rangeX = [0, 100]
 rangeY = [0, 100]
 

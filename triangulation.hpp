@@ -1,5 +1,5 @@
-#ifndef __NAVMESH__H
-#define __NAVMESH__H
+#ifndef __TRIANGULATION__H
+#define __TRIANGULATION__H
 
 #include <vector>
 
@@ -7,11 +7,11 @@
 
 using namespace std;
 
-class Navmesh;
+class Triangulation;
 
-class NavmeshNode {
+class TriangulationNode {
 public:
-    Navmesh* navmesh;
+    Triangulation* triangulation;
 
     // Triangle Points
     int points[3];
@@ -24,21 +24,21 @@ public:
 
 };
 
-class Navmesh {
+class Triangulation {
 public:
     vector<Vector3> points;
-    vector<NavmeshNode> nodes;
+    vector<TriangulationNode> nodes;
 
-    Navmesh(vector<Vector3> _points) : points(_points) {};
+    Triangulation(vector<Vector3> _points) : points(_points) {};
 
     int AddPoint(Vector3 point) {
         points.push_back(point);
         return points.size() - 1;
     }
 
-    int AddNode(NavmeshNode node)
+    int AddNode(TriangulationNode node)
     {
-        node.navmesh = this;
+        node.triangulation = this;
         nodes.push_back(node);
         return nodes.size() - 1;
     }       
@@ -59,7 +59,7 @@ public:
         t3 = nodes[nodeID].neighbours[2];
 
         // Add 2 new triangles
-        NavmeshNode node1, node2;
+        TriangulationNode node1, node2;
         int node1ID = AddNode(node1);
         int node2ID = AddNode(node2);
 
@@ -79,7 +79,6 @@ public:
     // Flips the edge between two triangles
     // Note this assumes the triangles are adjancent
     void FlipTriangles(int node1, int node2) {
-
         // Find edge
         bool foundPoint = false;
         int p1, p2, p3, p4, p5, p6;
@@ -146,15 +145,12 @@ public:
 
     void InitNeighbours() {
         for (int i = 0; i < nodes.size(); i++) {
-            cerr << "NODES FOR " << i << endl;
-            cerr << nodes[i].points[0] << " " << nodes[i].points[1] << " " << nodes[i].points[2] << endl;
             // Check neighbours for node i
             for (int idx = 0; idx < 3; idx++) {
                 int x = nodes[i].points[idx];
                 int y = nodes[i].points[(idx + 1) % 3];
                 int neighbour = -1;
 
-                cerr << "NEIGHBOUR FOR EDGE " << x << " " << y << endl;
                 for (int j = 0; j < nodes.size(); j++) {
                     if (j == i) {
                         continue;
@@ -169,7 +165,6 @@ public:
                     }
 
                     if (cnt == 2) {
-                        cerr << "FOUND NEIGHBOUR " << j << endl;
                         neighbour = j;
                         break;
                     }
@@ -193,22 +188,22 @@ private:
 };
 
 // TODO: Move this to a proper cpp file
-bool NavmeshNode::ContainsPoint(Vector3 point) {
-    Vector3 p1 = navmesh->points[points[0]];
-    Vector3 p2 = navmesh->points[points[1]];
-    Vector3 p3 = navmesh->points[points[2]];
+bool TriangulationNode::ContainsPoint(Vector3 point) {
+    Vector3 p1 = triangulation->points[points[0]];
+    Vector3 p2 = triangulation->points[points[1]];
+    Vector3 p3 = triangulation->points[points[2]];
 
     return InsideTriangle(p1, p2, p3, point);
 }
 
-float NavmeshNode::GetDistanceToPoint(Vector3 point) {
+float TriangulationNode::GetDistanceToPoint(Vector3 point) {
     if (ContainsPoint(point)) {
         return 0;
     }
 
-    Vector3 p1 = navmesh->points[points[0]];
-    Vector3 p2 = navmesh->points[points[1]];
-    Vector3 p3 = navmesh->points[points[2]];
+    Vector3 p1 = triangulation->points[points[0]];
+    Vector3 p2 = triangulation->points[points[1]];
+    Vector3 p3 = triangulation->points[points[2]];
 
     float d1 = LinePointDistance(p1, p2, point);
     float d2 = LinePointDistance(p2, p3, point);
