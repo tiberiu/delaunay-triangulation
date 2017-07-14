@@ -2,6 +2,7 @@
 #define __TRIANGULATION__H
 
 #include <vector>
+#include <iostream>
 
 #include "common.hpp"
 
@@ -20,7 +21,7 @@ public:
     int neighbours[3];
 
     bool ContainsPoint(Vector3 point);
-    float GetDistanceToPoint(Vector3 point);
+    double GetDistanceToPoint(Vector3 point);
 
 };
 
@@ -29,19 +30,85 @@ public:
     vector<Vector3> points;
     vector<TriangulationNode> nodes;
 
+    Triangulation() {};
     Triangulation(vector<Vector3> _points) : points(_points) {};
 
+    // Adds a new point to the pointset and returns it's id
     int AddPoint(Vector3 point) {
         points.push_back(point);
         return points.size() - 1;
     }
 
+    // Adds a new node (triangle) to the triangulation and returns it's id
     int AddNode(TriangulationNode node)
     {
         node.triangulation = this;
         nodes.push_back(node);
         return nodes.size() - 1;
-    }       
+    }
+
+    // Removes a point and all the nodes containing this point
+    // Note this will invalidate any external stored pointIds
+    void RemovePoint(int pointId)
+    {
+        // Remove point
+        vector<int> pointNewIds;
+        pointNewIds.resize(points.size());
+        int crtPos = 0;       
+        for (int i = 0; i < points.size() - 1; i++) {
+            if (i == pointId) {
+                pointNewIds[i] = -1;
+                continue;
+            }
+            points[crtPos] = points[i];
+            pointNewIds[i] = crtPos;
+            crtPos++;
+        }
+
+        points.resize(crtPos);
+
+        // Now remove all nodes containing this
+        vector<int> nodeNewIds;
+        nodeNewIds.resize(nodes.size());
+        crtPos = 0;
+        for (int i = 0; i < nodes.size(); i++) {
+            bool containsPoint = false;
+            if (nodes[i].points[0] == pointId || nodes[i].points[1] == pointId || 
+                nodes[i].points[2] == pointId) {
+                containsPoint = true;
+            }
+
+            if (containsPoint) {
+                nodeNewIds[i] = -1;
+                continue;
+            }
+
+            nodes[crtPos] = nodes[i];
+            nodeNewIds[i] = crtPos;
+            crtPos++;
+        }
+        nodes.resize(crtPos);
+
+        // Pass through all nodes and correct any pointIds and neighbourIds that are now incorrect
+        for (int i = 0; i < nodes.size(); i++) {
+
+            nodes[i].points[0] = pointNewIds[nodes[i].points[0]];
+            nodes[i].points[1] = pointNewIds[nodes[i].points[1]];
+            nodes[i].points[2] = pointNewIds[nodes[i].points[2]];
+
+            if (nodes[i].neighbours[0] != -1) {
+                nodes[i].neighbours[0] = nodeNewIds[nodes[i].neighbours[0]];
+            }
+
+            if (nodes[i].neighbours[1] != -1) {
+                nodes[i].neighbours[1] = nodeNewIds[nodes[i].neighbours[1]];
+            }
+
+            if (nodes[i].neighbours[2] != -1) {
+                nodes[i].neighbours[2] = nodeNewIds[nodes[i].neighbours[2]];
+            }
+        }
+    }
 
     // Splits one triangle into three triangles given a point inside the triangle
     // Note this assumes the triangle defined by nodeID contains point
@@ -175,7 +242,25 @@ public:
         }
     }
 
-private:
+    void Print()
+    {
+        cout << points.size() << " " << nodes.size() << endl;
+        for (int i = 0; i < points.size(); i++) {
+            cout << points[i].x << " " << points[i].y << " " << points[i].z << endl;
+        }
+
+        for (int i = 0; i < nodes.size(); i++) {
+            for (int x = 0; x < 3; x++) {
+                cout << nodes[i].points[x] << " ";
+            }
+
+            for (int x = 0; x < 3; x++) {
+                cout << nodes[i].neighbours[x] << " ";
+            }
+            cout << endl;
+        }
+    }
+
     void EditNode(int nodeID, int p1, int p2, int p3, int t1, int t2, int t3) {
         nodes[nodeID].points[0] = p1;
         nodes[nodeID].points[1] = p2;
@@ -196,7 +281,7 @@ bool TriangulationNode::ContainsPoint(Vector3 point) {
     return InsideTriangle(p1, p2, p3, point);
 }
 
-float TriangulationNode::GetDistanceToPoint(Vector3 point) {
+double TriangulationNode::GetDistanceToPoint(Vector3 point) {
     if (ContainsPoint(point)) {
         return 0;
     }
@@ -205,9 +290,9 @@ float TriangulationNode::GetDistanceToPoint(Vector3 point) {
     Vector3 p2 = triangulation->points[points[1]];
     Vector3 p3 = triangulation->points[points[2]];
 
-    float d1 = LinePointDistance(p1, p2, point);
-    float d2 = LinePointDistance(p2, p3, point);
-    float d3 = LinePointDistance(p1, p3, point);
+    double d1 = LinePointDistance(p1, p2, point);
+    double d2 = LinePointDistance(p2, p3, point);
+    double d3 = LinePointDistance(p1, p3, point);
 
     return min(d1, min(d2, d3));
 }

@@ -105,7 +105,7 @@ int main() {
     // Read the N input points
     cin >> N;
     for (int i = 0; i < N; i++) {
-        float x, y;        
+        double x, y;        
         cin >> x >> y;
         points.push_back(Vector3(x, y, 0));
     }
@@ -116,21 +116,6 @@ int main() {
     InsertNonConvexHullPoints(points, triangulation);
     FlipEdges(points, triangulation);
 
-    cout << triangulation.points.size() << " " << triangulation.nodes.size() << endl;
-    for (int i = 0; i < triangulation.points.size(); i++) {
-        cout << triangulation.points[i].x << " " << triangulation.points[i].y << " " << triangulation.points[i].z << endl;
-    }
-
-    for (int i = 0; i < triangulation.nodes.size(); i++) {
-        for (int x = 0; x < 3; x++) {
-            cout << triangulation.nodes[i].points[x] << " ";
-        }
-
-        for (int x = 0; x < 3; x++) {
-            cout << triangulation.nodes[i].neighbours[x] << " ";
-        }
-        cout << endl;
-    }
-
+    triangulation.Print();
     return 0;
 }

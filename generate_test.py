@@ -1,8 +1,8 @@
 import random
 
-N = 30
-rangeX = [0, 100]
-rangeY = [0, 100]
+N = 150
+rangeX = [0, 1000]
+rangeY = [0, 1000]
 
 f = open("data/delaunay.in", "w")
 f.write("%d\n" % N)
