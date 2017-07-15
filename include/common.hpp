@@ -26,6 +26,17 @@ public:
     }
 };
 
+Vector3 operator+(Vector3 lhs, const Vector3& rhs)
+{
+    return Vector3(lhs.x + rhs.x, lhs.y + rhs.y, lhs.z + rhs.z);
+}
+
+Vector3 operator*(Vector3 lhs, const double alpha)
+{
+    return Vector3(lhs.x * alpha, lhs.y * alpha, lhs.z * alpha);
+}
+
+
 // Returns the distance between two points
 double GetDistance(Vector3 p1, Vector3 p2) {
     return sqrt((p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y));
@@ -168,6 +179,41 @@ bool InsideTriangleCircumcircle(Vector3 p1, Vector3 p2, Vector3 p3, Vector3 poin
                    (d11 * d32 * d23) - (d31 * d22 * d13) - (d21 * d12 * d33);
 
     return detVal > EPS;
+}
+
+bool BoundingBoxIntersect(Vector3 b1, Vector3 b2, Vector3 b3, Vector3 b4)
+{
+    if ((b1.x < b4.x && b2.x > b3.x) &&
+        (b1.y < b4.y && b2.y > b3.y)) {
+        return true;
+    }
+
+    return false;
+}
+
+bool SegmentIntersect(Vector3 p1, Vector3 p2, Vector3 p3, Vector3 p4)
+{
+    // Check bounding box
+    Vector3 b1 = Vector3(min(p1.x, p2.x), min(p1.y, p2.y), min(p1.z, p2.z));
+    Vector3 b2 = Vector3(max(p1.x, p2.x), max(p1.y, p2.y), max(p1.z, p2.z));
+
+    Vector3 b3 = Vector3(min(p3.x, p4.x), min(p3.y, p4.y), min(p3.z, p4.z));
+    Vector3 b4 = Vector3(max(p3.x, p4.x), max(p3.y, p4.y), max(p3.z, p4.z));
+
+    if (!BoundingBoxIntersect(b1, b2, b3, b4)) {
+        return false;
+    }
+
+    float d1 = det(p3, p4, p1);
+    float d2 = det(p3, p4, p2);
+    float d3 = det(p1, p2, p3);
+    float d4 = det(p1, p2, p4);
+
+    if (d1 * d2 < EPS && d3 * d4 < EPS) {
+        return true;
+    }
+
+    return false;
 }
 
 #endif

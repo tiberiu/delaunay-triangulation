@@ -270,6 +270,35 @@ public:
         nodes[nodeID].neighbours[1] = t2;
         nodes[nodeID].neighbours[2] = t3;
     }
+
+    int JumpAndWalk(Vector3 point)
+    {
+        // TODO: start with a rando node
+        int nodeId = 0;
+
+        while (!nodes[nodeId].ContainsPoint(point))
+        {
+            Vector3 p1 = points[nodes[nodeId].points[0]];
+            Vector3 p2 = points[nodes[nodeId].points[1]];
+            Vector3 p3 = points[nodes[nodeId].points[2]];                       
+
+            Vector3 triangleCenter = p1 * (1.0 / 3) + p2 * (1.0 / 3) + p3 * (1.0 / 3);
+            for (int i = 0; i < 3; i++) {
+                Vector3 p1 = points[nodes[nodeId].points[(i + 1) % 3]];
+                Vector3 p2 = points[nodes[nodeId].points[(i + 2) % 3]];
+                if (SegmentIntersect(triangleCenter, point, p1, p2)) {
+                    nodeId = nodes[nodeId].neighbours[i];
+                    break;
+                }
+            }
+
+            if (nodeId == -1) {
+                return -1;
+            }
+        }
+
+        return nodeId;
+    }
 };
 
 // TODO: Move this to a proper cpp file
